@@ -9,6 +9,11 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 <!-- Next release goes here -->
 
+## [v0.1.1] - 2026-05-18
+
+### Fixed
+- add generic font-family fallbacks
+
 ## [v0.1.0] - 2026-05-18
 
 ### Added
