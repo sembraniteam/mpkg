@@ -1,0 +1,94 @@
+version: "2"
+
+run:
+  go: "1.26"
+  timeout: 5m
+  tests: true
+
+output:
+  formats:
+    text:
+      path: stdout
+      colors: true
+
+linters:
+  enable:
+#    - gosec
+    - govet
+    - mnd
+    - modernize
+    - nakedret
+    - nilerr
+    - nilnesserr
+    - nolintlint
+    - reassign
+    - sqlclosecheck
+    - staticcheck
+    - unused
+    - revive
+    - whitespace
+
+  settings:
+    mnd:
+      checks:
+        - argument
+        - case
+        - condition
+        - operation
+        - return
+        - assign
+
+      ignored-files:
+        - '.*_test\.go'
+
+    nakedret:
+      max-func-lines: 40
+
+#    gosec:
+#      severity: medium
+#      confidence: medium
+#      excludes:
+#        - G117
+
+    revive:
+      rules:
+        - name: var-naming
+        - name: package-comments
+          disabled: true
+        - name: line-length-limit
+          disabled: true
+
+  exclusions:
+    rules:
+      - path: _test\.go
+        linters:
+          - dupl
+          - errcheck
+          - gosec
+          - ineffassign
+          - sqlclosecheck
+
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+    - golines
+
+  settings:
+    gofmt:
+      simplify: true
+      rewrite-rules:
+        - pattern: 'interface{}'
+          replacement: 'any'
+        - pattern: 'a[b:len(a)]'
+          replacement: 'a[b:]'
+
+    gofumpt:
+      module-path: go.sembraniteam.com/mpkg
+      extra-rules: true
+
+    golines:
+      max-len: 80
+      shorten-comments: true

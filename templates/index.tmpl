@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{.Title}}</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👾</text></svg>">
+  <script>(function(){try{var t=localStorage.getItem('mpkg-theme')||(window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.setAttribute('data-theme',t);}catch(e){}}());</script>
+  <style>
+    :root {
+      --font-mono: 'Courier New', Courier, monospace;
+      --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --max-w: 1040px;
+    }
+    [data-theme="dark"] {
+      --bg: #0f2027; --surface: rgba(255,255,255,0.025); --surface-solid: #1a3a2e;
+      --border: rgba(255,255,255,0.06); --border-accent: rgba(46,204,113,0.19);
+      --border-accent-md: rgba(46,204,113,0.25);
+      --text: #f0f0f0; --text-2: #aaa; --text-3: #555;
+      --accent: #2ecc71; --accent-10: rgba(46,204,113,0.10); --accent-20: rgba(46,204,113,0.20);
+      --cyan: #5dc9e2; --row-shadow: none; --row-sep: rgba(255,255,255,0.031);
+      --search-bg: #1a3a2e; --search-border: rgba(46,204,113,0.19);
+      --btn-bg: rgba(255,255,255,0.06); --btn-border: rgba(255,255,255,0.12); --btn-color: #ccc;
+      --toggle-bg: rgba(255,255,255,0.06); --toggle-border: rgba(255,255,255,0.12); --toggle-icon: #818cf8;
+      --page-btn-bg: rgba(255,255,255,0.04); --page-btn-border: rgba(255,255,255,0.10); --page-btn-color: #aaa;
+      --footer-color: #555;
+    }
+    [data-theme="light"] {
+      --bg: #f8fafc; --surface: #fff; --surface-solid: #fff;
+      --border: #e2e8f0; --border-accent: rgba(46,204,113,0.20);
+      --border-accent-md: rgba(46,204,113,0.25);
+      --text: #1e293b; --text-2: #475569; --text-3: #94a3b8;
+      --accent: #16a34a; --accent-10: rgba(46,204,113,0.10); --accent-20: rgba(46,204,113,0.18);
+      --cyan: #0891b2; --row-shadow: 0 1px 3px rgba(0,0,0,0.04); --row-sep: rgba(0,0,0,0.06);
+      --search-bg: #fff; --search-border: #e2e8f0;
+      --btn-bg: #f8fafc; --btn-border: #e2e8f0; --btn-color: #475569;
+      --toggle-bg: #f1f5f9; --toggle-border: #e2e8f0; --toggle-icon: #f59e0b;
+      --page-btn-bg: #fff; --page-btn-border: #e2e8f0; --page-btn-color: #64748b;
+      --footer-color: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body), sans-serif; min-height: 100vh; }
+    .container { max-width: var(--max-w); margin: 0 auto; padding: 0 20px; }
+
+    /* ── Header ── */
+    .header { padding: 40px 0 24px; border-bottom: 1px solid var(--border-accent); }
+    .logo { font-family: var(--font-mono), monospace; color: var(--accent); font-size: 11px; line-height: 1.3; white-space: pre; overflow-x: auto; }
+    .tagline { color: var(--text-2); font-size: 13px; letter-spacing: 0.5px; margin-top: 8px; }
+
+    /* ── Search ── */
+    .search-row { display: flex; gap: 10px; margin-top: 16px; align-items: center; }
+    .search-wrap {
+      flex: 1; display: flex; align-items: center; gap: 8px;
+      background: var(--search-bg); border: 1px solid var(--search-border);
+      border-radius: 8px; padding: 10px 16px;
+    }
+    .search-wrap input {
+      background: none; border: none; outline: none;
+      color: var(--text); font-size: 15px; width: 100%;
+      font-family: var(--font-body), sans-serif;
+    }
+    .search-wrap input::placeholder { color: var(--text-3); }
+    .search-wrap input::-webkit-search-cancel-button { -webkit-appearance: none; }
+    .search-wrap > svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--text-3); }
+    .search-clear {
+      display: none; background: none; border: none; padding: 0; cursor: pointer;
+      color: var(--text-3); line-height: 0; flex-shrink: 0;
+    }
+    .search-clear:hover { color: var(--text); }
+    .search-clear svg { width: 16px; height: 16px; }
+    .count-badge {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--accent-10); border: 1px solid var(--border-accent-md);
+      border-radius: 8px; padding: 10px 16px;
+      color: var(--accent); font-size: 13px; font-weight: 600;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .count-badge svg { width: 14px; height: 14px; }
+    .theme-toggle {
+      background: var(--toggle-bg); border: 1px solid var(--toggle-border);
+      border-radius: 8px; width: 42px; height: 42px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0; color: var(--toggle-icon);
+    }
+    .theme-toggle:hover { opacity: 0.8; }
+    .theme-toggle svg { width: 18px; height: 18px; }
+    [data-theme="light"] .icon-moon { display: none; }
+    [data-theme="dark"]  .icon-sun  { display: none; }
+
+    /* ── Package list ── */
+    .pkg-list { padding: 12px 0; }
+    .pkg-row {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px 16px; margin-bottom: 8px;
+      display: flex; align-items: flex-start;
+      justify-content: space-between; gap: 12px;
+      box-shadow: var(--row-shadow); transition: border-color 0.15s;
+    }
+    .pkg-row:hover { border-color: var(--border-accent-md); }
+    .pkg-row:last-child { margin-bottom: 0; }
+    .pkg-info { flex: 1; min-width: 0; }
+    .pkg-name { margin-bottom: 4px; }
+    .pkg-base { color: var(--text-3); font-size: 14px; }
+    .pkg-module { color: var(--cyan); font-size: 17px; font-weight: 700; }
+
+    /* ── Description clamp + tooltip ── */
+    .pkg-desc-wrap { position: relative; cursor: default; }
+    .pkg-desc {
+      color: var(--text-2); font-size: 14px; line-height: 1.5; margin: 4px 0 0;
+      display: -webkit-box; -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .pkg-tooltip {
+      display: none; position: absolute;
+      left: 0; top: calc(100% + 6px); z-index: 10;
+      background: var(--surface-solid); border: 1px solid var(--border-accent-md);
+      border-radius: 8px; padding: 10px 14px;
+      color: var(--text-2); font-size: 14px; line-height: 1.6;
+      max-width: 360px; min-width: 220px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3); pointer-events: none;
+    }
+    .pkg-tooltip::before {
+      content: ''; position: absolute; top: -5px; left: 16px;
+      width: 8px; height: 8px; background: var(--surface-solid);
+      border-left: 1px solid var(--border-accent-md); border-top: 1px solid var(--border-accent-md);
+      transform: rotate(45deg);
+    }
+    @media (hover: hover) { .pkg-desc-wrap:hover .pkg-tooltip { display: block; } }
+    .pkg-desc-wrap:focus-within .pkg-tooltip { display: block; }
+
+    /* ── Tags ── */
+    .pkg-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .tag {
+      background: var(--accent-10); color: var(--accent);
+      font-size: 12px; padding: 3px 10px; border-radius: 12px;
+      border: 1px solid var(--border-accent-md);
+    }
+
+    /* ── Buttons ── */
+    .pkg-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 13px; padding: 8px 14px; border-radius: 6px;
+      border: 1px solid var(--btn-border); background: var(--btn-bg);
+      color: var(--btn-color); cursor: pointer; text-decoration: none;
+      white-space: nowrap; font-family: var(--font-body), sans-serif;
+    }
+    .btn:hover { color: var(--text); border-color: var(--border-accent-md); }
+    .btn svg { width: 14px; height: 14px; }
+    .btn-copy { background: var(--accent-10); border-color: var(--border-accent-md); color: var(--accent); }
+    .btn-copy:hover { background: var(--accent-20); }
+    .btn-copy.copied { color: var(--text-2); }
+
+    /* ── Empty state ── */
+    .empty-state { text-align: center; padding: 60px 20px; }
+    .empty-icon { font-size: 40px; margin-bottom: 12px; }
+    .empty-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: var(--text); }
+    .empty-desc { color: var(--text-2); font-size: 14px; line-height: 1.6; max-width: 300px; margin: 0 auto; }
+    code {
+      color: var(--accent); background: var(--accent-10);
+      padding: 1px 6px; border-radius: 4px;
+      font-family: var(--font-mono), monospace; font-size: 12px;
+    }
+
+    /* ── Pagination ── */
+    .pagination { display: flex; justify-content: center; align-items: center; gap: 4px; padding: 16px 0 8px; }
+    .page-btn {
+      width: 32px; height: 32px; border: 1px solid var(--page-btn-border);
+      border-radius: 6px; background: var(--page-btn-bg);
+      color: var(--page-btn-color); display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-family: var(--font-body), sans-serif; cursor: pointer;
+    }
+    .page-btn:hover:not(:disabled) { border-color: var(--border-accent-md); color: var(--accent); }
+    .page-btn.active { background: var(--accent-10); border-color: var(--border-accent-md); color: var(--accent); font-weight: 700; }
+    .page-btn:disabled { opacity: 0.35; cursor: default; }
+    .page-btn svg { width: 14px; height: 14px; }
+    .page-ellipsis { width: 24px; text-align: center; color: var(--text-3); font-size: 12px; }
+
+    /* ── Footer ── */
+    .footer {
+      padding: 20px 0; border-top: 1px solid var(--row-sep);
+      display: flex; justify-content: space-between;
+      color: var(--footer-color); font-size: 12px;
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 600px) {
+      .logo { font-size: 8px; }
+      .pkg-module { font-size: 15px; }
+      .pkg-desc { font-size: 13px; }
+      .pkg-actions { flex-wrap: wrap; }
+      .pkg-tooltip {
+        position: fixed; left: 16px; right: 16px; bottom: 16px;
+        top: auto; max-width: none; z-index: 100;
+      }
+      .pkg-tooltip::before { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header class="header">
+    <pre class="logo">{{.Logo}}</pre>
+    {{if .Tagline}}<p class="tagline">{{.Tagline}}</p>{{end}}
+    <div class="search-row">
+      <label class="search-wrap" for="search" aria-label="Search packages">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd"/>
+        </svg>
+        <input id="search" type="search" placeholder="Search packages..." autocomplete="off">
+        <button id="search-clear" class="search-clear" type="button" aria-label="Clear search">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+      </label>
+      <div class="count-badge" aria-live="polite">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12.378 1.602a.75.75 0 0 0-.756 0L3 6.632l9 5.25 9-5.25-8.622-5.03ZM21.75 7.93l-9 5.25v9l8.628-5.032a.75.75 0 0 0 .372-.648V7.93ZM11.25 22.18v-9l-9-5.25v8.57a.75.75 0 0 0 .372.648l8.628 5.033Z"/>
+        </svg>
+        <span id="pkg-count">{{len .Modules}} package{{if ne (len .Modules) 1}}s{{end}}</span>
+      </div>
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle light/dark theme">
+        <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 2.25a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.5 12a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM18.894 6.166a.75.75 0 0 0-1.06-1.06l-1.591 1.59a.75.75 0 1 0 1.06 1.061l1.591-1.59ZM21.75 12a.75.75 0 0 1-.75.75h-2.25a.75.75 0 0 1 0-1.5H21a.75.75 0 0 1 .75.75ZM17.834 18.894a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 1 0-1.061 1.06l1.59 1.591ZM12 18a.75.75 0 0 1 .75.75V21a.75.75 0 0 1-1.5 0v-2.25A.75.75 0 0 1 12 18ZM7.166 17.834a.75.75 0 0 0-1.06 1.06l1.59 1.591a.75.75 0 1 0 1.061-1.06l-1.59-1.591ZM6 12a.75.75 0 0 1-.75.75H3a.75.75 0 0 1 0-1.5h2.25A.75.75 0 0 1 6 12ZM6.166 6.166a.75.75 0 0 0 1.06 1.06l1.59-1.59a.75.75 0 0 0-1.06-1.061L6.166 6.166Z"/>
+        </svg>
+        <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 0 1 .162.819A8.97 8.97 0 0 0 9 6a9 9 0 0 0 9 9 8.97 8.97 0 0 0 3.463-.69.75.75 0 0 1 .981.98 10.503 10.503 0 0 1-9.694 6.46c-5.799 0-10.5-4.7-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 0 1 .818.162Z" clip-rule="evenodd"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    {{if eq (len .Modules) 0}}
+    <div class="empty-state">
+      <div class="empty-icon">📦</div>
+      <h2 class="empty-title">No packages yet</h2>
+      <p class="empty-desc">
+        Add your first Go package by editing
+        <code>mpkg.yaml</code> and running <code>mpkg generate</code>.
+      </p>
+    </div>
+    {{else}}
+    <ul class="pkg-list" id="pkg-list" role="list">
+      {{range .Modules}}
+      <li class="pkg-row" data-search="{{.Name}} {{.Description}} {{range .Tags}}{{.}} {{end}}" role="listitem">
+        <div class="pkg-info">
+          <div class="pkg-name">
+            <span class="pkg-base">{{$.BaseURL}}/</span><span class="pkg-module">{{.Name}}</span>
+          </div>
+          {{if .Description}}
+          <div class="pkg-desc-wrap" tabindex="0">
+            <p class="pkg-desc">{{.Description}}</p>
+            <div class="pkg-tooltip" role="tooltip">{{.Description}}</div>
+          </div>
+          {{end}}
+          {{if .Tags}}
+          <div class="pkg-tags" aria-label="Tags">
+            {{range .Tags}}<span class="tag">{{.}}</span>{{end}}
+          </div>
+          {{end}}
+        </div>
+        <div class="pkg-actions">
+          <a href="{{.DocURL}}" target="_blank" rel="noopener noreferrer" class="btn" title="Documentation">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M11.25 4.533A9.707 9.707 0 0 0 6 3a9.735 9.735 0 0 0-3.25.555.75.75 0 0 0-.5.707v14.25a.75.75 0 0 0 1 .707A8.237 8.237 0 0 1 6 18.75c1.995 0 3.823.707 5.25 1.886V4.533ZM12.75 20.636A8.214 8.214 0 0 1 18 18.75c.966 0 1.89.166 2.75.47a.75.75 0 0 0 1-.708V4.262a.75.75 0 0 0-.5-.707A9.735 9.735 0 0 0 18 3a9.707 9.707 0 0 0-5.25 1.533v16.103Z"/>
+            </svg>
+            docs
+          </a>
+          <a href="{{.GitURL}}/tree/{{.Branch}}" target="_blank" rel="noopener noreferrer" class="btn" title="Source code">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M14.447 3.026a.75.75 0 0 1 .527.921l-4.5 16.5a.75.75 0 0 1-1.448-.394l4.5-16.5a.75.75 0 0 1 .921-.527ZM16.72 6.22a.75.75 0 0 1 1.06 0l5.25 5.25a.75.75 0 0 1 0 1.06l-5.25 5.25a.75.75 0 1 1-1.06-1.06L21.44 12l-4.72-4.72a.75.75 0 0 1 0-1.06Zm-9.44 0a.75.75 0 0 1 0 1.06L2.56 12l4.72 4.72a.75.75 0 1 1-1.06 1.06L.97 12.53a.75.75 0 0 1 0-1.06l5.25-5.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd"/>
+            </svg>
+            src
+          </a>
+          <button class="btn btn-copy" onclick="copyGoGet(this,'{{$.BaseURL}}/{{.Name}}')" title="Copy go get command" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M17.663 3.118c.225.015.45.032.673.05C19.876 3.298 21 4.604 21 6.109v9.642a3 3 0 0 1-3 3V16.5c0-5.922-4.576-10.775-10.384-11.217.324-1.132 1.3-2.01 2.548-2.114.224-.019.448-.036.673-.051A3 3 0 0 1 13.5 1.5H15a3 3 0 0 1 2.663 1.618ZM12 4.5A1.5 1.5 0 0 1 13.5 3H15a1.5 1.5 0 0 1 1.5 1.5H12Z" clip-rule="evenodd"/>
+              <path d="M3 8.625c0-1.036.84-1.875 1.875-1.875h.375A3.75 3.75 0 0 1 9 10.5v1.875c0 1.036.84 1.875 1.875 1.875h1.875A3.75 3.75 0 0 1 16.5 18v2.625c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625v-12Z"/>
+              <path d="M10.5 10.5a5.23 5.23 0 0 1 1.279-3.434 9.768 9.768 0 0 1 6.963 6.963 5.23 5.23 0 0 1-3.434 1.279h-1.875a1.875 1.875 0 0 1-1.875-1.875V10.5Z"/>
+            </svg>
+            copy
+          </button>
+        </div>
+      </li>
+      {{end}}
+    </ul>
+    <nav id="pagination" class="pagination" aria-label="Package pages"></nav>
+    {{end}}
+  </main>
+
+  <footer class="footer">
+    <span>Powered by mpkg · {{.BaseURL}}</span>
+    <span>Generated {{.Generated}}</span>
+  </footer>
+</div>
+
+<script>
+// ── Theme toggle ──
+document.getElementById('theme-toggle').addEventListener('click', function() {
+  var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  try { localStorage.setItem('mpkg-theme', next); } catch(e) {}
+});
+
+// ── Search + Pagination ──
+(function() {
+  var input    = document.getElementById('search');
+  var clearBtn = document.getElementById('search-clear');
+  var rows     = Array.from(document.querySelectorAll('.pkg-row'));
+  var badge    = document.getElementById('pkg-count');
+  var paginationEl = document.getElementById('pagination');
+  if (!input || !rows.length) return;
+
+  var PAGE_SIZE = 20;
+  var currentPage = 1;
+
+  function updateCount(n) {
+    if (badge) badge.textContent = n + ' package' + (n !== 1 ? 's' : '');
+  }
+
+  var prevSVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z" clip-rule="evenodd"/></svg>';
+  var nextSVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z" clip-rule="evenodd"/></svg>';
+
+  function renderPagination(totalRows) {
+    if (!paginationEl) return;
+    var totalPages = Math.ceil(totalRows / PAGE_SIZE);
+    paginationEl.innerHTML = '';
+    if (totalPages <= 1) return;
+
+    function mkBtn(html, page, disabled, active) {
+      var btn = document.createElement('button');
+      btn.className = 'page-btn' + (active ? ' active' : '');
+      btn.disabled = !!disabled;
+      btn.innerHTML = html;
+      if (!disabled) btn.addEventListener('click', function() { goToPage(page); });
+      return btn;
+    }
+    function mkEllipsis() {
+      var s = document.createElement('span');
+      s.className = 'page-ellipsis';
+      s.textContent = '…';
+      return s;
+    }
+
+    paginationEl.appendChild(mkBtn(prevSVG, currentPage - 1, currentPage === 1, false));
+
+    var shown = new Set([1, totalPages, currentPage, currentPage - 1, currentPage + 1]
+      .filter(function(p) { return p >= 1 && p <= totalPages; }));
+    var sorted = Array.from(shown).sort(function(a, b) { return a - b; });
+    sorted.forEach(function(p, i) {
+      if (i > 0 && p - sorted[i - 1] > 1) paginationEl.appendChild(mkEllipsis());
+      paginationEl.appendChild(mkBtn(String(p), p, false, p === currentPage));
+    });
+
+    paginationEl.appendChild(mkBtn(nextSVG, currentPage + 1, currentPage === totalPages, false));
+  }
+
+  function goToPage(page) {
+    currentPage = page;
+    var start = (page - 1) * PAGE_SIZE;
+    rows.forEach(function(row, i) {
+      row.style.display = (i >= start && i < start + PAGE_SIZE) ? '' : 'none';
+    });
+    renderPagination(rows.length);
+    updateCount(rows.length);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function filter() {
+    var q = input.value.toLowerCase().trim();
+    if (q) {
+      var matched = 0;
+      rows.forEach(function(row) {
+        var show = row.getAttribute('data-search').toLowerCase().indexOf(q) !== -1;
+        row.style.display = show ? '' : 'none';
+        if (show) matched++;
+      });
+      if (paginationEl) paginationEl.style.display = 'none';
+      updateCount(matched);
+    } else {
+      if (paginationEl) paginationEl.style.display = '';
+      goToPage(1);
+    }
+    if (clearBtn) clearBtn.style.display = q ? 'block' : 'none';
+  }
+
+  input.addEventListener('input', filter);
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function() {
+      input.value = '';
+      input.focus();
+      filter();
+    });
+  }
+
+  goToPage(1);
+})();
+
+function copyGoGet(btn, path) {
+  if (!navigator.clipboard) { return; }
+  navigator.clipboard.writeText('go get ' + path + '@latest').then(function() {
+    btn.classList.add('copied');
+    var orig = btn.innerHTML;
+    btn.textContent = 'copied!';
+    setTimeout(function() { btn.innerHTML = orig; btn.classList.remove('copied'); }, 1500);
+  }).catch(function() {
+    btn.textContent = 'failed';
+    setTimeout(function() { btn.textContent = 'copy'; }, 1500);
+  });
+}
+</script>
+</body>
+</html>

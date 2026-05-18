@@ -1,0 +1,6 @@
+.idea
+*.out
+*.test
+build/
+dist/
+mpkg.yaml
