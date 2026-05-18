@@ -1,9 +1,9 @@
 # mpkg
 
-> Generate static HTML for Go vanity import paths.
+Generate static HTML for Go vanity import paths.
 
 [![CI](https://github.com/sembraniteam/mpkg/actions/workflows/ci.yml/badge.svg)](https://github.com/sembraniteam/mpkg/actions/workflows/ci.yml)
-[![Go Reference](https://pkg.go.dev/badge/github.com/sembraniteam/mpkg.svg)](https://pkg.go.dev/go.sembraniteam.com/mpkg-v1)
+[![Go Reference](https://pkg.go.dev/badge/github.com/sembraniteam/mpkg.svg)](https://pkg.go.dev/go.sembraniteam.com/mpkg)
 [![Go Version](https://img.shields.io/badge/go-1.26+-00ADD8?logo=go)](https://go.dev)
 
 **mpkg** reads a YAML config, generates a self-contained static site where every module page carries the correct `go-import` and `go-source` meta tags, and produces a searchable index listing all packages. Deploy the output directory to any static host — no server-side code required.
@@ -11,7 +11,7 @@
 ## Installation
 
 ```bash
-go install go.sembraniteam.com/mpkg-v1@latest
+go install go.sembraniteam.com/mpkg@latest
 ```
 
 Or download a pre-built binary from [GitHub Releases](https://github.com/sembraniteam/mpkg/releases).
@@ -132,7 +132,7 @@ mpkg watch [flags]
 
 ```bash
 git clone https://github.com/sembraniteam/mpkg.git
-cd mpkg-v1
+cd mpkg
 go test ./...   # run the full test suite
 go build .      # build the binary
 ```
