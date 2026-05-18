@@ -10,6 +10,15 @@ Generate static HTML for Go vanity import paths.
 
 ## Installation
 
+**Homebrew (macOS/Linux):**
+
+```bash
+brew tap sembraniteam/tap
+brew install mpkg
+```
+
+**Go:**
+
 ```bash
 go install go.sembraniteam.com/mpkg@latest
 ```
