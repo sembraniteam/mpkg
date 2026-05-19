@@ -35,9 +35,10 @@ type moduleRow struct {
 }
 
 type moduleData struct {
-	FullPath string
-	GitURL   string
-	Branch   string
+	FullPath    string
+	GitURL      string
+	Branch      string
+	Description string
 }
 
 type notFoundData struct {
@@ -121,9 +122,10 @@ func renderModule(
 	out string,
 ) error {
 	data := moduleData{
-		FullPath: baseURL + "/" + name,
-		GitURL:   mod.GitURL,
-		Branch:   mod.Branch,
+		FullPath:    baseURL + "/" + name,
+		GitURL:      mod.GitURL,
+		Branch:      mod.Branch,
+		Description: mod.Description,
 	}
 	dir := filepath.Join(out, filepath.FromSlash(name))
 	if err := os.MkdirAll(dir, perm); err != nil {

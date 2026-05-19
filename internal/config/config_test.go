@@ -16,7 +16,7 @@ func TestLoad(t *testing.T) {
 		{
 			name: "valid full config",
 			yaml: `
-base_url: sembraniteam.com
+base_url: geekswamp.dev
 site:
   title: "Test Packages"
   tagline: "My packages"
@@ -32,7 +32,7 @@ modules:
     tags: [http, web]
 `,
 			want: &Config{
-				BaseURL: "sembraniteam.com",
+				BaseURL: "geekswamp.dev",
 				Site: SiteConfig{
 					Title:    "Test Packages",
 					Tagline:  "My packages",
@@ -68,6 +68,26 @@ modules:
 		{
 			name: "empty modules is valid",
 			yaml: "base_url: example.com\nmodules: {}\n",
+			want: &Config{
+				BaseURL: "example.com",
+				Site:    SiteConfig{Logo: "MPKG", LogoFont: "standard"},
+				Build:   BuildConfig{OutputDir: "build"},
+				Modules: map[string]Module{},
+			},
+		},
+		{
+			name: "base_url with https scheme is normalized",
+			yaml: "base_url: https://example.com\nmodules: {}\n",
+			want: &Config{
+				BaseURL: "example.com",
+				Site:    SiteConfig{Logo: "MPKG", LogoFont: "standard"},
+				Build:   BuildConfig{OutputDir: "build"},
+				Modules: map[string]Module{},
+			},
+		},
+		{
+			name: "base_url with http scheme and trailing slash is normalized",
+			yaml: "base_url: http://example.com/\nmodules: {}\n",
 			want: &Config{
 				BaseURL: "example.com",
 				Site:    SiteConfig{Logo: "MPKG", LogoFont: "standard"},

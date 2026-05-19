@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"go.yaml.in/yaml/v3"
 )
@@ -61,7 +62,15 @@ func LoadFromReader(r io.Reader) (*Config, error) {
 	return &cfg, nil
 }
 
+func normalizeBaseURL(u string) string {
+	u = strings.TrimPrefix(u, "https://")
+	u = strings.TrimPrefix(u, "http://")
+	u = strings.TrimRight(u, "/")
+	return u
+}
+
 func applyDefaults(cfg *Config) {
+	cfg.BaseURL = normalizeBaseURL(cfg.BaseURL)
 	if cfg.Site.Logo == "" {
 		cfg.Site.Logo = "MPKG"
 	}

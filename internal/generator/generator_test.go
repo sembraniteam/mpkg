@@ -143,10 +143,7 @@ func TestRenderLogoFallback(t *testing.T) {
 }
 
 func TestBuildOutputDirNotCreatable(t *testing.T) {
-	// Use a path under a non-existent root to trigger MkdirAll failure.
-	// On most systems /proc or a read-only path works; use a file-as-dir trick.
 	dir := t.TempDir()
-	// Create a regular file where a directory would be needed.
 	blocker := filepath.Join(dir, "blocker")
 	if err := os.WriteFile(blocker, []byte("x"), 0o444); err != nil {
 		t.Fatal(err)
@@ -167,7 +164,6 @@ func TestBuildOutputDirNotCreatable(t *testing.T) {
 
 func TestBuildWriteTemplateError(t *testing.T) {
 	dir := t.TempDir()
-	// Make the output directory read-only so os.Create fails.
 	if err := os.Chmod(dir, 0o555); err != nil {
 		t.Fatal(err)
 	}
@@ -241,5 +237,64 @@ func TestRenderIndexSortOrder(t *testing.T) {
 			)
 		}
 		prev = pos
+	}
+}
+
+func TestBuildMetaTags(t *testing.T) {
+	dir := t.TempDir()
+	cfg := &config.Config{
+		BaseURL: "example.com",
+		Site: config.SiteConfig{
+			Title:    "My Packages",
+			Tagline:  "Go vanity imports",
+			Logo:     "Test",
+			LogoFont: "standard",
+		},
+		Build: config.BuildConfig{OutputDir: dir},
+		Modules: map[string]config.Module{
+			"router": {
+				GitURL:      "https://github.com/test/router",
+				Branch:      "main",
+				Description: "HTTP router",
+				Tags:        []string{"http"},
+			},
+		},
+	}
+
+	if err := Build(cfg); err != nil {
+		t.Fatalf("Build() error = %v", err)
+	}
+
+	indexHTML, err := os.ReadFile(filepath.Join(dir, "index.html"))
+	if err != nil {
+		t.Fatalf("read index.html: %v", err)
+	}
+	for _, want := range []string{
+		`<meta name="description" content="Go vanity imports">`,
+		`<meta property="og:type" content="website">`,
+		`<meta property="og:title" content="My Packages">`,
+		`<meta property="og:description" content="Go vanity imports">`,
+		`<meta property="og:url" content="https://example.com">`,
+	} {
+		if !strings.Contains(string(indexHTML), want) {
+			t.Errorf("index.html missing %q", want)
+		}
+	}
+
+	moduleHTML, err := os.ReadFile(filepath.Join(dir, "router/index.html"))
+	if err != nil {
+		t.Fatalf("read router/index.html: %v", err)
+	}
+	for _, want := range []string{
+		`<meta name="description" content="HTTP router">`,
+		`<meta property="og:type" content="website">`,
+		`<meta property="og:title" content="example.com/router">`,
+		`<meta property="og:description" content="HTTP router">`,
+		`<meta property="og:url" content="https://example.com/router">`,
+		`<meta name="robots" content="noindex, follow">`,
+	} {
+		if !strings.Contains(string(moduleHTML), want) {
+			t.Errorf("router/index.html missing %q", want)
+		}
 	}
 }
