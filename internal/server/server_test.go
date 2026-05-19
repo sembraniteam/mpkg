@@ -1,16 +1,16 @@
 package server
 
 import (
+	"io"
 	"net"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
-	"time"
 )
 
 func TestNewServerError(t *testing.T) {
-	// Bind a port, then try to bind the same port again — should fail.
 	ln, err := net.Listen("tcp", ":0")
 	if err != nil {
 		t.Fatal(err)
@@ -51,6 +51,45 @@ func TestServe(t *testing.T) {
 			path:       "/missing",
 			wantStatus: http.StatusNotFound,
 		},
+		{
+			name: "serves custom 404.html for missing file",
+			setup: func(dir string) {
+				_ = os.WriteFile(
+					filepath.Join(dir, "404.html"),
+					[]byte("<h1>not found</h1>"),
+					0o644,
+				)
+			},
+			path:       "/missing",
+			wantStatus: http.StatusNotFound,
+			wantBody:   "<h1>not found</h1>",
+		},
+		{
+			name: "returns 404 for directory without index.html",
+			setup: func(dir string) {
+				_ = os.MkdirAll(filepath.Join(dir, "somedir"), 0o755)
+				_ = os.WriteFile(
+					filepath.Join(dir, "404.html"),
+					[]byte("<h1>not found</h1>"),
+					0o644,
+				)
+			},
+			path:       "/somedir",
+			wantStatus: http.StatusNotFound,
+			wantBody:   "<h1>not found</h1>",
+		},
+		{
+			name: "path traversal returns 404",
+			setup: func(dir string) {
+				_ = os.WriteFile(
+					filepath.Join(dir, "404.html"),
+					[]byte("<h1>not found</h1>"),
+					0o644,
+				)
+			},
+			path:       "/../../etc/passwd",
+			wantStatus: http.StatusNotFound,
+		},
 	}
 
 	for _, tt := range tests {
@@ -58,13 +97,12 @@ func TestServe(t *testing.T) {
 			dir := t.TempDir()
 			tt.setup(dir)
 
-			srv, err := New(dir, 0) // port 0 = random available port
+			srv, err := New(dir, 0)
 			if err != nil {
 				t.Fatalf("New() error = %v", err)
 			}
 
 			go srv.Start(t.Context())
-			time.Sleep(50 * time.Millisecond)
 
 			resp, err := http.Get("http://" + srv.Addr() + tt.path)
 			if err != nil {
@@ -74,6 +112,17 @@ func TestServe(t *testing.T) {
 
 			if resp.StatusCode != tt.wantStatus {
 				t.Errorf("status = %d, want %d", resp.StatusCode, tt.wantStatus)
+			}
+
+			if tt.wantBody != "" {
+				body, _ := io.ReadAll(resp.Body)
+				if !strings.Contains(string(body), tt.wantBody) {
+					t.Errorf(
+						"body does not contain %q, got: %s",
+						tt.wantBody,
+						body,
+					)
+				}
 			}
 		})
 	}
